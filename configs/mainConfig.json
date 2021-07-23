@@ -1,5 +1,8 @@
 {
   "command_prefix": "?",
   "case_insensitive": true,
-  "help_command": null
+  "help_command": null,
+  "active_modules": [
+    "messageLogger"
+  ]
 }
