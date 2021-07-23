@@ -1,8 +1,18 @@
 import discord
 import json
 
+import logging
+import sys
+
+
 from discord.ext import commands
 from discord.utils import get
+
+logging.basicConfig(level=logging.DEBUG),
+		stream=sys.stdout,
+		style="{",
+		format="{asctime} ({module} : {funcName} : {lineno}) [{levelname:8}] {message}",
+		datefmt="%d.%m.%Y %H:%M:%S")
 
 with open("configs/mainConfig.json", "r") as config_file:
     mainConfig = json.load(config_file)
@@ -16,7 +26,7 @@ bot = commands.Bot(command_prefix=mainConfig["command_prefix"], case_insensitive
 
 @bot.event
 async def on_ready():
-    print("Bot gestartet")
+    logging.info("Bot is running...")
     return
 
 @bot.event
