@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO,
 	format="{asctime} ({module} : {funcName} : {lineno}) [{levelname:8}] {message}",
 	datefmt="%d.%m.%Y %H:%M:%S")
 
-configs = configLoader.Configs("configs",["mainConfig.json","token.json","messageLogger.json"])
+configs = configLoader.Configs("configs",["mainConfig.json","token.json","logger.json","group_textchannel.json"])
 
 intents = discord.Intents.all()
 
@@ -29,11 +29,19 @@ useMessageLogger = True if "messageLogger" in configs.mainConfig["active_modules
 
 if useMessageLogger:
 	try:
-		os.mkdir(configs.messageLogger["directory"])
+		os.mkdir(configs.logger["directory"])
 	except FileExistsError:
 		pass
 
-	messageLogger = logger.MessageLogger(f"{configs.messageLogger['directory']}/{configs.messageLogger['baseFilename']}")
+	messageLogger = logger.MessageLogger(f"{configs.logger['directory']}/{configs.logger['messageLoggerBaseFilename']}")
+	messageLogger.initFile()
+
+useTextChannelGroup = True if "textchannel" in configs.mainConfig["active_groups"] else False
+useClearChannel = True if useTextChannelGroup and "clearChannel" in configs.group_textchannel["active_modules"] else False
+
+if useTextChannelGroup:
+	textchannelLogger = logger.TextChannelLogger(f"{configs.logger['directory']}/{configs.logger['textChannelLoggerBaseFilename']}")
+	textchannelLogger.initFile()
 
 @bot.event
 async def on_ready():
@@ -45,5 +53,13 @@ async def on_message(message):
 	if useMessageLogger:
 		messageLogger.logMessage(message.author, message.author.id, message.content, message.id)
 	await bot.process_commands(message)
+
+@bot.command(alias=[])
+async def clearChannel(ctx):
+	if not useClearChannel:
+		return
+
+	await ctx.channel.purge()
+	textchannelLogger.logClearChannel(ctx.author, ctx.author.id, ctx.channel.name, ctx.channel.id)
 
 bot.run(token)

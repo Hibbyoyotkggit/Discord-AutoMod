@@ -4,5 +4,8 @@
   "help_command": null,
   "active_modules": [
     "messageLogger"
+  ],
+  "active_groups": [
+    "textchannel"
   ]
 }
