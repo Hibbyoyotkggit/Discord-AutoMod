@@ -1,0 +1,5 @@
+{
+  "command_prefix": "?",
+  "case_insensitive": true,
+  "help_command": null
+}
