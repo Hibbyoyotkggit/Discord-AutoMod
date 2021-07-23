@@ -9,7 +9,7 @@ import sys, os
 import json
 
 # importing bot modules
-from modules import logger
+from modules import configLoader, logger
 
 logging.basicConfig(level=logging.INFO,
 	stream=sys.stdout,
@@ -17,29 +17,23 @@ logging.basicConfig(level=logging.INFO,
 	format="{asctime} ({module} : {funcName} : {lineno}) [{levelname:8}] {message}",
 	datefmt="%d.%m.%Y %H:%M:%S")
 
-with open("configs/mainConfig.json", "r") as config_file:
-    mainConfig = json.load(config_file)
-
-with open("configs/token.json", "r") as token_file:
-    token = json.load(token_file)["token"]
-
-with open("configs/messageLogger.json") as json_file:
-	messageLoggerConfig = json.load(json_file)
+configs = configLoader.Configs("configs",["mainConfig.json","token.json","messageLogger.json"])
 
 intents = discord.Intents.all()
 
-bot = commands.Bot(command_prefix=mainConfig["command_prefix"], case_insensitive=mainConfig["case_insensitive"], help_command=mainConfig["help_command"], intents=intents)
+bot = commands.Bot(command_prefix=configs.mainConfig["command_prefix"], case_insensitive=configs.mainConfig["case_insensitive"], help_command=configs.mainConfig["help_command"], intents=intents)
+token = configs.token["token"]
 
 # initialise modules
-useMessageLogger = True if "messageLogger" in mainConfig["active_modules"] else False
+useMessageLogger = True if "messageLogger" in configs.mainConfig["active_modules"] else False
 
 if useMessageLogger:
 	try:
-		os.mkdir(messageLoggerConfig["directory"])
+		os.mkdir(configs.messageLogger["directory"])
 	except FileExistsError:
 		pass
 
-	messageLogger = logger.MessageLogger(f"{messageLoggerConfig['directory']}/{messageLoggerConfig['baseFilename']}")
+	messageLogger = logger.MessageLogger(f"{configs.messageLogger['directory']}/{configs.messageLogger['baseFilename']}")
 
 @bot.event
 async def on_ready():
