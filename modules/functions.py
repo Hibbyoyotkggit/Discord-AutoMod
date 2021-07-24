@@ -11,3 +11,13 @@ def activeVoiceChannels(channels):
             count += 1
 
     return count
+
+def onBlacklist(blacklist, message):
+    messageLower = message.lower().replace(' ','')
+    print(f"'{messageLower}'")
+
+    for word in blacklist:
+        if word in messageLower:
+            return True
+
+    return False

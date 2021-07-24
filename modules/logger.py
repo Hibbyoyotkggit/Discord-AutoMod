@@ -14,10 +14,18 @@ class MessageLogger(Logger):
         with open(self.filename, "a") as file:
             file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} by '{author}' ({authorId}): '{message}' ({messageId})\n")
 
+    def logDelete(self, message, messageId, author, authorId):
+        with open(self.filename, "a") as file:
+            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{message}' ({messageId}) by '{author}' ({authorId}) was deleted\n")
+
 class TextChannelLogger(Logger):
     def logClearChannel(self, author, authorId, channel, channelId):
         with open(self.filename, "a") as file:
             file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} cleared Channel '{channel}' ({channelId}) invoked by '{author}' ({authorId})\n")
+
+    def logMessageDeleteBlacklist(self, message, messageId, author, authorId):
+        with open(self.filename, "a") as file:
+            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{message}' ({messageId}) by '{author}' ({authorId}) was deleted (blacklist)\n")
 
 class VoiceChannelLogger(Logger):
     def logJoin(self, member, memberId, channel, channelId):

@@ -3,9 +3,6 @@
   "case_insensitive": true,
   "help_command": null,
   "guild": "",
-  "active_modules": [
-    "messageLogger"
-  ],
   "active_groups": [
     "textchannel",
     "voicechannel"

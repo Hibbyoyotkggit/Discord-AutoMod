@@ -17,7 +17,8 @@ logging.basicConfig(level=logging.INFO,
 	format="{asctime} ({module} : {funcName} : {lineno}) [{levelname:8}] {message}",
 	datefmt="%d.%m.%Y %H:%M:%S")
 
-configs = configLoader.Configs("configs",["mainConfig.json","token.json","logger.json","group_textchannel.json","autoGenChannel.json"])
+configFiles = ["mainConfig.json","token.json","logger.json","group_textchannel.json","autoGenChannel.json","blacklist.json"]
+configs = configLoader.Configs("configs",configFiles)
 
 intents = discord.Intents.default()
 intents.voice_states = True
@@ -66,7 +67,19 @@ async def on_ready():
 async def on_message(message):
 	if moduleStates.isLoaded('messageLogger'):
 		messageLogger.logMessage(message.author, message.author.id, message.content, message.id)
+
+	if moduleStates.isLoaded('wordBlacklist'):
+		if functions.onBlacklist(configs.blacklist["blacklist"],message.content):
+			if moduleStates.isLoaded('messageLogger'):
+				textchannelLogger.logMessageDeleteBlacklist(message.content, message.id, message.author.name, message.author.id)
+			await message.delete()
+
 	await bot.process_commands(message)
+
+@bot.event
+async def on_message_delete(message):
+	if moduleStates.isLoaded('messageLogger'):
+		messageLogger.logDelete(message.content, message.id, message.author.name, message.author.id)
 
 @bot.event
 async def on_voice_state_update(member, before, after):

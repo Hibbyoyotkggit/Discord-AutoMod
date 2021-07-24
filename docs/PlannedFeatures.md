@@ -2,7 +2,6 @@
 
  * scatter roles on reaction to specific messages
  * spam protection
- * word blacklist
  * link filter
  * mod contact
  * welcoming new sever members
