@@ -16,19 +16,29 @@ class ModuleStates():
             return
 
         mainConfig = self.readFile(self.mainConfigFile)
-        for module in mainConfig["active_modules"]:
-            self.loadedModules.append(module)
+        if mainConfig.get("active_modules") != None:
+            for module in mainConfig["active_modules"]:
+                self.loadedModules.append(module)
 
-        for group in mainConfig["active_groups"]:
-            self.loadedGroups.append(group)
+        if mainConfig.get("active_groups") != None:
+            for group in mainConfig["active_groups"]:
+                self.readStatesOfGroup(group)
 
-            groupFile = f"group_{group}.json"
-            if not self.fileExists(groupFile):
-                continue
+    def readStatesOfGroup(self, group):
+        self.loadedGroups.append(group)
 
-            groupConfig = self.readFile(groupFile)
+        groupFile = f"group_{group}.json"
+        if not self.fileExists(groupFile):
+            continue
+
+        groupConfig = self.readFile(groupFile)
+        if groupConfig.get("active_modules") != None:
             for module in groupConfig["active_modules"]:
                 self.loadedModules.append(module)
+
+        if groupConfig.get("active_groups") != None:
+            for group in groupConfig["active_groups"]:
+                self.readStatesOfGroup(group)
 
     def fileExists(self, filename):
         return os.path.exists(f"{self.directory}/{filename}")
