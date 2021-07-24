@@ -1,5 +1,6 @@
 {
   "directory": "./logs",
   "messageLoggerBaseFilename": "messages",
-  "textChannelLoggerBaseFilename": "textchannel"
+  "textChannelLoggerBaseFilename": "textchannel",
+  "voiceChannelLoggerBaseFilename": "voicechannel"
 }
