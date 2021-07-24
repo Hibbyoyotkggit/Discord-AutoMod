@@ -39,6 +39,8 @@ if useMessageLogger:
 useTextChannelGroup = True if "textchannel" in configs.mainConfig["active_groups"] else False
 useClearChannel = True if useTextChannelGroup and "clearChannel" in configs.group_textchannel["active_modules"] else False
 
+useVoiceChannelGroup = True if "voicechannel" in configs.mainConfig["active_groups"] else False
+
 if useTextChannelGroup:
 	textchannelLogger = logger.TextChannelLogger(f"{configs.logger['directory']}/{configs.logger['textChannelLoggerBaseFilename']}")
 	textchannelLogger.initFile()
