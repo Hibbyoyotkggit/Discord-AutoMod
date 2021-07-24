@@ -19,7 +19,9 @@ logging.basicConfig(level=logging.INFO,
 
 configs = configLoader.Configs("configs",["mainConfig.json","token.json","logger.json","group_textchannel.json","autoGenChannel.json"])
 
-intents = discord.Intents.all()
+intents = discord.Intents.default()
+intents.voice_states = True
+intents.messages = True
 
 bot = commands.Bot(command_prefix=configs.mainConfig["command_prefix"], case_insensitive=configs.mainConfig["case_insensitive"], help_command=configs.mainConfig["help_command"], intents=intents)
 token = configs.token["token"]
@@ -42,12 +44,22 @@ if moduleStates.isLoaded('textchannel'):
 	textchannelLogger = logger.TextChannelLogger(f"{configs.logger['directory']}/{configs.logger['textChannelLoggerBaseFilename']}")
 	textchannelLogger.initFile()
 
+if moduleStates.isLoaded('logJoinLeaveChannel'):
+	voiceChannelLogger = logger.VoiceChannelLogger(f"{configs.logger['directory']}/{configs.logger['voiceChannelLoggerBaseFilename']}")
+	voiceChannelLogger.initFile()
+
 @bot.event
 async def on_ready():
 	logging.info("Bot is running...")
 
 	if moduleStates.isLoaded('autoGenChannel'):
-		logging.info('auto gen channel is active')
+		guild = bot.get_guild(configs.mainConfig["guild"])
+		category = guild.get_channel(configs.autoGenChannel["category"])
+
+		logging.info(category.voice_channels)
+
+		if len(category.voice_channels) == 0:
+			await category.create_voice_channel("Channel1")
 
 		return
 
@@ -56,6 +68,16 @@ async def on_message(message):
 	if moduleStates.isLoaded('messageLogger'):
 		messageLogger.logMessage(message.author, message.author.id, message.content, message.id)
 	await bot.process_commands(message)
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+	if moduleStates.isLoaded('logJoinLeaveChannel'):
+		if before.channel == None and after.channel != None:
+			voiceChannelLogger.logJoin(member.name, member.id, after.channel.name, after.channel.id)
+		elif before.channel != None and after.channel == None:
+			voiceChannelLogger.logLeave(member.name, member.id, before.channel.name, before.channel.id)
+		elif before.channel != None and after.channel != None and before.channel != after.channel:
+			voiceChannelLogger.logMove(member.name, member.id, before.channel.name, before.channel.id, after.channel.name, after.channel.id)
 
 @bot.command(alias=[])
 async def clearChannel(ctx):

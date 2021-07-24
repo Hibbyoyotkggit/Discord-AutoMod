@@ -18,3 +18,16 @@ class TextChannelLogger(Logger):
     def logClearChannel(self, author, authorId, channel, channelId):
         with open(self.filename, "a") as file:
             file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} cleared Channel '{channel}' ({channelId}) invoked by '{author}' ({authorId})\n")
+
+class VoiceChannelLogger(Logger):
+    def logJoin(self, member, memberId, channel, channelId):
+        with open(self.filename, "a") as file:
+            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{member}' ({memberId}) joind voice channel '{channel}' ({channelId})\n")
+
+    def logLeave(self, member, memberId, channel, channelId):
+        with open(self.filename, "a") as file:
+            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{member}' ({memberId}) left voice channel '{channel}' ({channelId})\n")
+
+    def logMove(self, member, memberId, beforeChannel, beforeChannelId, afterChannel, afterChannelId):
+        with open(self.filename, "a") as file:
+            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{member}' ({memberId}) moved from voice channel '{beforeChannel}' ({beforeChannelId}) to '{afterChannel}' ({afterChannelId})\n")
