@@ -9,7 +9,7 @@ import sys, os
 import json
 
 # importing bot modules
-from modules import configLoader, moduleCheck, logger
+from modules import configLoader, moduleCheck, logger, functions
 
 logging.basicConfig(level=logging.INFO,
 	stream=sys.stdout,
@@ -53,13 +53,12 @@ async def on_ready():
 	logging.info("Bot is running...")
 
 	if moduleStates.isLoaded('autoGenChannel'):
-		guild = bot.get_guild(configs.mainConfig["guild"])
-		category = guild.get_channel(configs.autoGenChannel["category"])
+		category = functions.get_channel(configs.mainConfig["guild"], configs.autoGenChannel["category"], bot)
 
 		logging.info(category.voice_channels)
 
 		if len(category.voice_channels) == 0:
-			await category.create_voice_channel("Channel1")
+			await category.create_voice_channel("Channel")
 
 		return
 
@@ -71,13 +70,47 @@ async def on_message(message):
 
 @bot.event
 async def on_voice_state_update(member, before, after):
-	if moduleStates.isLoaded('logJoinLeaveChannel'):
-		if before.channel == None and after.channel != None:
+	if moduleStates.isLoaded('autoGenChannel'):
+		category = functions.get_channel(configs.mainConfig["guild"], configs.autoGenChannel["category"], bot)
+		doCheck = True if before.channel in category.voice_channels or after.channel in category.voice_channels else False
+
+	# join
+	if before.channel == None and after.channel != None:
+		if moduleStates.isLoaded('logJoinLeaveChannel'):
 			voiceChannelLogger.logJoin(member.name, member.id, after.channel.name, after.channel.id)
-		elif before.channel != None and after.channel == None:
+
+		if moduleStates.isLoaded('autoGenChannel') and doCheck:
+			if functions.activeVoiceChannels(category.voice_channels) == len(category.voice_channels):
+				await category.create_voice_channel("Channel")
+
+	# leave
+	elif before.channel != None and after.channel == None:
+		if moduleStates.isLoaded('logJoinLeaveChannel'):
 			voiceChannelLogger.logLeave(member.name, member.id, before.channel.name, before.channel.id)
-		elif before.channel != None and after.channel != None and before.channel != after.channel:
+
+		if moduleStates.isLoaded('autoGenChannel') and doCheck:
+			for channel in category.voice_channels:
+				if functions.activeVoiceChannels(category.voice_channels) < len(category.voice_channels)-1:
+					if len(channel.members) == 0:
+						await channel.delete()
+				else:
+					break
+
+	# move
+	elif before.channel != None and after.channel != None and before.channel != after.channel:
+		if moduleStates.isLoaded('logJoinLeaveChannel'):
 			voiceChannelLogger.logMove(member.name, member.id, before.channel.name, before.channel.id, after.channel.name, after.channel.id)
+
+		if moduleStates.isLoaded('autoGenChannel') and doCheck:
+			if functions.activeVoiceChannels(category.voice_channels) == len(category.voice_channels):
+				await category.create_voice_channel("Channel")
+
+			for channel in category.voice_channels:
+				if functions.activeVoiceChannels(category.voice_channels) < len(category.voice_channels)-1:
+					if len(channel.members) == 0:
+						await channel.delete()
+				else:
+					break
 
 @bot.command(alias=[])
 async def clearChannel(ctx):
