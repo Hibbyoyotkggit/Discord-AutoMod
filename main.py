@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO,
 	format="{asctime} ({module} : {funcName} : {lineno}) [{levelname:8}] {message}",
 	datefmt="%d.%m.%Y %H:%M:%S")
 
-configs = configLoader.Configs("configs",["mainConfig.json","token.json","logger.json","group_textchannel.json"])
+configs = configLoader.Configs("configs",["mainConfig.json","token.json","logger.json","group_textchannel.json","autoGenChannel.json"])
 
 intents = discord.Intents.all()
 
@@ -44,8 +44,12 @@ if moduleStates.isLoaded('textchannel'):
 
 @bot.event
 async def on_ready():
-    logging.info("Bot is running...")
-    return
+	logging.info("Bot is running...")
+
+	if moduleStates.isLoaded('autoGenChannel'):
+		logging.info('auto gen channel is active')
+
+		return
 
 @bot.event
 async def on_message(message):

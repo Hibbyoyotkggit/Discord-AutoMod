@@ -1,0 +1,7 @@
+autoGenChannel.json
+group_textchannel.json
+group_voicechannel.json
+logger.json
+mainConfig.json
+
+!defaults/*
