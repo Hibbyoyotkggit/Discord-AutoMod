@@ -2,6 +2,7 @@
   "active_modules": [
     "messageLogger",
     "clearChannel",
-    "wordBlacklist"
+    "wordBlacklist",
+    "linkBlocker"
   ]
 }

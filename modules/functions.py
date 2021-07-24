@@ -1,3 +1,5 @@
+import re
+
 def get_channel(guildId, channelId, bot):
     guild = bot.get_guild(guildId)
     channel = guild.get_channel(channelId)
@@ -14,10 +16,17 @@ def activeVoiceChannels(channels):
 
 def onBlacklist(blacklist, message):
     messageLower = message.lower().replace(' ','')
-    print(f"'{messageLower}'")
 
     for word in blacklist:
         if word in messageLower:
             return True
+
+    return False
+
+def containsLink(message):
+    reString = r".*(http|https)://.*\.[a-zA-Z]{2,3}(/[\d\w]*)*(\s*.*)?"
+
+    if re.fullmatch(reString, message, re.I):
+        return True
 
     return False

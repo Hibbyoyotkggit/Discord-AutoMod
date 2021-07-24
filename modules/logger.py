@@ -27,6 +27,11 @@ class TextChannelLogger(Logger):
         with open(self.filename, "a") as file:
             file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{message}' ({messageId}) by '{author}' ({authorId}) was deleted (blacklist)\n")
 
+    def logMessageDeleteLink(self, message, messageId, author, authorId):
+        with open(self.filename, "a") as file:
+            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{message}' ({messageId}) by '{author}' ({authorId}) was deleted (link)\n")
+
+
 class VoiceChannelLogger(Logger):
     def logJoin(self, member, memberId, channel, channelId):
         with open(self.filename, "a") as file:

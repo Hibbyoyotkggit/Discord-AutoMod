@@ -74,6 +74,12 @@ async def on_message(message):
 				textchannelLogger.logMessageDeleteBlacklist(message.content, message.id, message.author.name, message.author.id)
 			await message.delete()
 
+	if moduleStates.isLoaded('linkBlocker'):
+		if functions.containsLink(message.content):
+			if moduleStates.isLoaded('messageLogger'):
+				textchannelLogger.logMessageDeleteLink(message.content, message.id, message.author.name, message.author.id)
+			await message.delete()
+
 	await bot.process_commands(message)
 
 @bot.event
