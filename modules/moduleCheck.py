@@ -29,7 +29,7 @@ class ModuleStates():
 
         groupFile = f"group_{group}.json"
         if not self.fileExists(groupFile):
-            continue
+            return
 
         groupConfig = self.readFile(groupFile)
         if groupConfig.get("active_modules") != None:
