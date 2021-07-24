@@ -7,5 +7,7 @@ This is a discord bot designed to do some moderation tasks.
 
   * Logging all messages
   * clearing a textchannel with a single command
+  * Logging voice channel activity (join, leave, move)
+  * auto generation voice channels
 
 A list of features that will be added in the future can be found [here](https://einfachirgendwer0815.github.io/Discord-AutoMod/PlannedFeatures).

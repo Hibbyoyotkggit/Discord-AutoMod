@@ -6,8 +6,8 @@
  * link filter
  * mod contact
  * welcoming new sever members
- * automated management of voice channels
  * management for private voice channels
+ * multi server/category
 
 ### Your help
 
