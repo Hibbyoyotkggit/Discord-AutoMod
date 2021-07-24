@@ -9,7 +9,7 @@ import sys, os
 import json
 
 # importing bot modules
-from modules import configLoader, logger
+from modules import configLoader, moduleCheck, logger
 
 logging.basicConfig(level=logging.INFO,
 	stream=sys.stdout,
@@ -25,9 +25,11 @@ bot = commands.Bot(command_prefix=configs.mainConfig["command_prefix"], case_ins
 token = configs.token["token"]
 
 # initialise modules
-useMessageLogger = True if "messageLogger" in configs.mainConfig["active_modules"] else False
 
-if useMessageLogger:
+moduleStates = moduleCheck.ModuleStates("configs","mainConfig.json")
+logging.info(moduleStates.loadedModules)
+
+if moduleStates.isLoaded('messageLogger'):
 	try:
 		os.mkdir(configs.logger["directory"])
 	except FileExistsError:
@@ -36,12 +38,7 @@ if useMessageLogger:
 	messageLogger = logger.MessageLogger(f"{configs.logger['directory']}/{configs.logger['messageLoggerBaseFilename']}")
 	messageLogger.initFile()
 
-useTextChannelGroup = True if "textchannel" in configs.mainConfig["active_groups"] else False
-useClearChannel = True if useTextChannelGroup and "clearChannel" in configs.group_textchannel["active_modules"] else False
-
-useVoiceChannelGroup = True if "voicechannel" in configs.mainConfig["active_groups"] else False
-
-if useTextChannelGroup:
+if moduleStates.isLoaded('textchannel'):
 	textchannelLogger = logger.TextChannelLogger(f"{configs.logger['directory']}/{configs.logger['textChannelLoggerBaseFilename']}")
 	textchannelLogger.initFile()
 
@@ -52,13 +49,13 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-	if useMessageLogger:
+	if moduleStates.isLoaded('messageLogger'):
 		messageLogger.logMessage(message.author, message.author.id, message.content, message.id)
 	await bot.process_commands(message)
 
 @bot.command(alias=[])
 async def clearChannel(ctx):
-	if not useClearChannel:
+	if not moduleStates.isLoaded('clearChannel'):
 		return
 
 	await ctx.channel.purge()
