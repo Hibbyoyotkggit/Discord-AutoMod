@@ -6,8 +6,7 @@ class ModuleStates():
         self.directory = directory
         self.mainConfigFile = mainConfigFile
 
-        self.loadedGroups = []
-        self.loadedModules = []
+        self.loadedGuilds = {}
 
         self.readStates()
 
@@ -16,29 +15,39 @@ class ModuleStates():
             return
 
         mainConfig = self.readFile(self.mainConfigFile)
-        if mainConfig.get("active_modules") != None:
-            for module in mainConfig["active_modules"]:
-                self.loadedModules.append(module)
+        if mainConfig.get("guilds") != None:
+            for guildId in mainConfig["guilds"].keys():
+                guild = mainConfig["guilds"][guildId]
 
-        if mainConfig.get("active_groups") != None:
-            for group in mainConfig["active_groups"]:
-                self.readStatesOfGroup(group)
+                self.loadedGuilds[guildId] = {"active_modules": [], "active_groups": []}
 
-    def readStatesOfGroup(self, group):
-        self.loadedGroups.append(group)
+                if guild.get("active_modules") != None:
+                    for module in guild["active_modules"]:
+                        self.loadedGuilds[guildId]["active_modules"].append(module)
 
+                if guild.get("active_groups") != None:
+                    for group in guild["active_groups"]:
+                        self.loadedGuilds[guildId]["active_groups"].append(group)
+
+                        self.readStatesOfGroup(group, guildId)
+
+    def readStatesOfGroup(self, group, guildId):
         groupFile = f"group_{group}.json"
         if not self.fileExists(groupFile):
             return
 
-        groupConfig = self.readFile(groupFile)
-        if groupConfig.get("active_modules") != None:
-            for module in groupConfig["active_modules"]:
-                self.loadedModules.append(module)
 
-        if groupConfig.get("active_groups") != None:
-            for group in groupConfig["active_groups"]:
-                self.readStatesOfGroup(group)
+        groupConfig = self.readFile(groupFile)
+        if groupConfig.get(guildId) != None:
+            guild = groupConfig[guildId]
+
+            if guild.get("active_modules") != None:
+                for module in guild["active_modules"]:
+                    self.loadedGuilds[guildId]["active_modules"].append(module)
+
+            if guild.get("active_groups") != None:
+                for group in guild["active_groups"]:
+                    self.readStatesOfGroup(group, guildId)
 
     def fileExists(self, filename):
         return os.path.exists(f"{self.directory}/{filename}")
@@ -49,5 +58,8 @@ class ModuleStates():
 
         return text
 
-    def isLoaded(self,name):
-        return True if name in self.loadedGroups or name in self.loadedModules else False
+    def isLoaded(self, name, guildId):
+        guildId = str(guildId)
+        if guildId not in self.loadedGuilds.keys():
+            return False
+        return True if name in (guild := self.loadedGuilds[guildId])["active_modules"] or name in guild["active_groups"] else False
