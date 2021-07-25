@@ -2,9 +2,12 @@
   "command_prefix": "?",
   "case_insensitive": true,
   "help_command": null,
-  "guild": "",
-  "active_groups": [
-    "textchannel",
-    "voicechannel"
-  ]
+  "guilds": {
+    "GUILDID": {
+      "active_groups": [
+        "textchannel",
+        "voicechannel"
+      ]
+    }
+  }
 }

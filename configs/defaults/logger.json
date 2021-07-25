@@ -1,6 +1,8 @@
 {
-  "directory": "./logs",
-  "messageLoggerBaseFilename": "messages",
-  "textChannelLoggerBaseFilename": "textchannel",
-  "voiceChannelLoggerBaseFilename": "voicechannel"
+  "GUILDID": {
+    "directory": "./logs",
+    "messageLoggerBaseFilename": "messages",
+    "textChannelLoggerBaseFilename": "textchannel",
+    "voiceChannelLoggerBaseFilename": "voicechannel"
+  }
 }
