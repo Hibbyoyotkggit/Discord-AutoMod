@@ -55,67 +55,68 @@ for guildId in moduleStates.loadedGuilds.keys():
 		voiceChannelLogger[guildId] = logger.VoiceChannelLogger(f"{configs.logger[guildId]['directory']}/{configs.logger[guildId]['voiceChannelLoggerBaseFilename']}")
 		voiceChannelLogger[guildId].initFile()
 
-sys.exit()
-
 @bot.event
 async def on_ready():
 	logging.info("Bot is running...")
 
-	if moduleStates.isLoaded('autoGenChannel'):
-		category = functions.get_channel(configs.mainConfig["guild"], configs.autoGenChannel["category"], bot)
+	for guildId in moduleStates.loadedGuilds.keys():
+		if moduleStates.isLoaded('autoGenChannel', guildId):
+			category = functions.get_channel(int(guildId), configs.autoGenChannel[guildId]["category"], bot)
 
-		logging.info(category.voice_channels)
+			logging.info(category.voice_channels)
 
-		if len(category.voice_channels) == 0:
-			await category.create_voice_channel("Channel")
-
-		return
+			if len(category.voice_channels) == 0:
+				await category.create_voice_channel("Channel")
 
 @bot.event
 async def on_message(message):
-	if moduleStates.isLoaded('messageLogger'):
-		messageLogger.logMessage(message.author, message.author.id, message.content, message.id)
+	guildId = str(message.guild.id)
+	if moduleStates.isLoaded('messageLogger', guildId):
+		messageLogger[guildId].logMessage(message.author, message.author.id, message.content, message.id)
 
-	if moduleStates.isLoaded('wordBlacklist'):
-		if functions.onBlacklist(configs.blacklist["blacklist"],message.content):
-			if moduleStates.isLoaded('messageLogger'):
-				textChannelLogger.logMessageDeleteBlacklist(message.content, message.id, message.author.name, message.author.id)
+	if moduleStates.isLoaded('wordBlacklist', guildId):
+		if functions.onBlacklist(configs.blacklist[guildId]["blacklist"],message.content):
+			if moduleStates.isLoaded('messageLogger', guildId):
+				textChannelLogger[guildId].logMessageDeleteBlacklist(message.content, message.id, message.author.name, message.author.id)
 			await message.delete()
 
-	if moduleStates.isLoaded('linkBlocker'):
+	if moduleStates.isLoaded('linkBlocker', guildId):
 		if functions.containsLink(message.content):
-			if moduleStates.isLoaded('messageLogger'):
-				textChannelLogger.logMessageDeleteLink(message.content, message.id, message.author.name, message.author.id)
+			if moduleStates.isLoaded('messageLogger', guildId):
+				textChannelLogger[guildId].logMessageDeleteLink(message.content, message.id, message.author.name, message.author.id)
 			await message.delete()
 
 	await bot.process_commands(message)
 
 @bot.event
 async def on_message_delete(message):
-	if moduleStates.isLoaded('messageLogger'):
-		messageLogger.logDelete(message.content, message.id, message.author.name, message.author.id)
+	guildId = str(message.guild.id)
+	if moduleStates.isLoaded('messageLogger', guildId):
+		messageLogger[guildId].logDelete(message.content, message.id, message.author.name, message.author.id)
 
+'''
 @bot.event
 async def on_voice_state_update(member, before, after):
-	if moduleStates.isLoaded('autoGenChannel'):
-		category = functions.get_channel(configs.mainConfig["guild"], configs.autoGenChannel["category"], bot)
+	guildId = 0
+	if moduleStates.isLoaded('autoGenChannel', guildId):
+		category = functions.get_channel(message.guild.id, configs.autoGenChannel[guildId]["category"], bot)
 		doCheck = True if before.channel in category.voice_channels or after.channel in category.voice_channels else False
 
 	# join
 	if before.channel == None and after.channel != None:
-		if moduleStates.isLoaded('logJoinLeaveChannel'):
-			voiceChannelLogger.logJoin(member.name, member.id, after.channel.name, after.channel.id)
+		if moduleStates.isLoaded('logJoinLeaveChannel', guildId):
+			voiceChannelLogger[guildId].logJoin(member.name, member.id, after.channel.name, after.channel.id)
 
-		if moduleStates.isLoaded('autoGenChannel') and doCheck:
+		if moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
 			if functions.activeVoiceChannels(category.voice_channels) == len(category.voice_channels):
 				await category.create_voice_channel("Channel")
 
 	# leave
 	elif before.channel != None and after.channel == None:
-		if moduleStates.isLoaded('logJoinLeaveChannel'):
-			voiceChannelLogger.logLeave(member.name, member.id, before.channel.name, before.channel.id)
+		if moduleStates.isLoaded('logJoinLeaveChannel', guildId):
+			voiceChannelLogger[guildId].logLeave(member.name, member.id, before.channel.name, before.channel.id)
 
-		if moduleStates.isLoaded('autoGenChannel') and doCheck:
+		if moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
 			for channel in category.voice_channels:
 				if functions.activeVoiceChannels(category.voice_channels) < len(category.voice_channels)-1:
 					if len(channel.members) == 0:
@@ -125,10 +126,10 @@ async def on_voice_state_update(member, before, after):
 
 	# move
 	elif before.channel != None and after.channel != None and before.channel != after.channel:
-		if moduleStates.isLoaded('logJoinLeaveChannel'):
-			voiceChannelLogger.logMove(member.name, member.id, before.channel.name, before.channel.id, after.channel.name, after.channel.id)
+		if moduleStates.isLoaded('logJoinLeaveChannel', guildId):
+			voiceChannelLogger[guildId].logMove(member.name, member.id, before.channel.name, before.channel.id, after.channel.name, after.channel.id)
 
-		if moduleStates.isLoaded('autoGenChannel') and doCheck:
+		if moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
 			if functions.activeVoiceChannels(category.voice_channels) == len(category.voice_channels):
 				await category.create_voice_channel("Channel")
 
@@ -138,13 +139,14 @@ async def on_voice_state_update(member, before, after):
 						await channel.delete()
 				else:
 					break
-
+'''
 @bot.command(alias=[])
 async def clearChannel(ctx):
-	if not moduleStates.isLoaded('clearChannel'):
+	guildId = str(ctx.message.guild.id)
+	if not moduleStates.isLoaded('clearChannel', guildId):
 		return
 
 	await ctx.channel.purge()
-	textChannelLogger.logClearChannel(ctx.author, ctx.author.id, ctx.channel.name, ctx.channel.id)
+	textChannelLogger[guildId].logClearChannel(ctx.author, ctx.author.id, ctx.channel.name, ctx.channel.id)
 
 bot.run(token)
