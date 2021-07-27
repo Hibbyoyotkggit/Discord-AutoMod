@@ -30,24 +30,32 @@ token = configs.token["token"]
 # initialise modules
 
 moduleStates = moduleCheck.ModuleStates("configs","mainConfig.json")
-logging.info(moduleStates.loadedModules)
+logging.info(moduleStates.loadedGuilds)
 
-if moduleStates.isLoaded('messageLogger'):
-	try:
-		os.mkdir(configs.logger["directory"])
-	except FileExistsError:
-		pass
+messageLogger = {}
+textChannelLogger = {}
+voiceChannelLogger = {}
 
-	messageLogger = logger.MessageLogger(f"{configs.logger['directory']}/{configs.logger['messageLoggerBaseFilename']}")
-	messageLogger.initFile()
+for guildId in moduleStates.loadedGuilds.keys():
+	if moduleStates.isLoaded('messageLogger', guildId) or moduleStates.isLoaded('textchannel', guildId) or moduleStates.isLoaded('logJoinLeaveChannel', guildId):
+		try:
+			os.mkdir(configs.logger[guildId]['directory'])
+		except FileExistsError:
+			pass
 
-if moduleStates.isLoaded('textchannel'):
-	textchannelLogger = logger.TextChannelLogger(f"{configs.logger['directory']}/{configs.logger['textChannelLoggerBaseFilename']}")
-	textchannelLogger.initFile()
+	if moduleStates.isLoaded('messageLogger', guildId):
+		messageLogger[guildId] = logger.MessageLogger(f"{configs.logger[guildId]['directory']}/{configs.logger[guildId]['messageLoggerBaseFilename']}")
+		messageLogger[guildId].initFile()
 
-if moduleStates.isLoaded('logJoinLeaveChannel'):
-	voiceChannelLogger = logger.VoiceChannelLogger(f"{configs.logger['directory']}/{configs.logger['voiceChannelLoggerBaseFilename']}")
-	voiceChannelLogger.initFile()
+	if moduleStates.isLoaded('textchannel', guildId):
+		textChannelLogger[guildId] = logger.TextChannelLogger(f"{configs.logger[guildId]['directory']}/{configs.logger[guildId]['textChannelLoggerBaseFilename']}")
+		textChannelLogger[guildId].initFile()
+
+	if moduleStates.isLoaded('logJoinLeaveChannel', guildId):
+		voiceChannelLogger[guildId] = logger.VoiceChannelLogger(f"{configs.logger[guildId]['directory']}/{configs.logger[guildId]['voiceChannelLoggerBaseFilename']}")
+		voiceChannelLogger[guildId].initFile()
+
+sys.exit()
 
 @bot.event
 async def on_ready():
@@ -71,13 +79,13 @@ async def on_message(message):
 	if moduleStates.isLoaded('wordBlacklist'):
 		if functions.onBlacklist(configs.blacklist["blacklist"],message.content):
 			if moduleStates.isLoaded('messageLogger'):
-				textchannelLogger.logMessageDeleteBlacklist(message.content, message.id, message.author.name, message.author.id)
+				textChannelLogger.logMessageDeleteBlacklist(message.content, message.id, message.author.name, message.author.id)
 			await message.delete()
 
 	if moduleStates.isLoaded('linkBlocker'):
 		if functions.containsLink(message.content):
 			if moduleStates.isLoaded('messageLogger'):
-				textchannelLogger.logMessageDeleteLink(message.content, message.id, message.author.name, message.author.id)
+				textChannelLogger.logMessageDeleteLink(message.content, message.id, message.author.name, message.author.id)
 			await message.delete()
 
 	await bot.process_commands(message)
@@ -137,6 +145,6 @@ async def clearChannel(ctx):
 		return
 
 	await ctx.channel.purge()
-	textchannelLogger.logClearChannel(ctx.author, ctx.author.id, ctx.channel.name, ctx.channel.id)
+	textChannelLogger.logClearChannel(ctx.author, ctx.author.id, ctx.channel.name, ctx.channel.id)
 
 bot.run(token)
