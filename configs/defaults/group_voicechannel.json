@@ -1,6 +1,8 @@
 {
-  "active_modules": [
-    "autoGenChannel",
-    "logJoinLeaveChannel"
-  ]
+  "GUILDID": {
+    "active_modules": [
+      "autoGenChannel",
+      "logJoinLeaveChannel"
+    ]
+  }
 }

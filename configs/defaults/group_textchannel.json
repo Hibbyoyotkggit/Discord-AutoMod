@@ -1,8 +1,10 @@
 {
-  "active_modules": [
-    "messageLogger",
-    "clearChannel",
-    "wordBlacklist",
-    "linkBlocker"
-  ]
+  "GUILDID": {
+    "active_modules": [
+      "messageLogger",
+      "clearChannel",
+      "wordBlacklist",
+      "linkBlocker"
+    ]
+  }
 }
