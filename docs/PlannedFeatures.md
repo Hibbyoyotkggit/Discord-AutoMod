@@ -5,7 +5,7 @@
  * mod contact
  * welcoming new sever members
  * management for private voice channels
- * multi server/category
+ * automatic vc generation multi category
 
 ### Your help
 

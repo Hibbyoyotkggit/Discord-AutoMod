@@ -11,5 +11,6 @@ This is a discord bot designed to do some moderation tasks.
   * auto generation voice channels
   * word blacklist
   * link blocker
+  * multi server
 
 A list of features that will be added in the future can be found [here](https://einfachirgendwer0815.github.io/Discord-AutoMod/PlannedFeatures).
