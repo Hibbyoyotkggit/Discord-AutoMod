@@ -157,4 +157,8 @@ async def clearChannel(ctx):
 	await ctx.channel.purge()
 	textChannelLogger[guildId].logClearChannel(ctx.author, ctx.author.id, ctx.channel.name, ctx.channel.id)
 
+@bot.command(alias=[])
+async def stopBot(ctx):
+	await bot.close()
+
 bot.run(token)
