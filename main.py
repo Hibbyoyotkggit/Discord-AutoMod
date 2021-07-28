@@ -109,23 +109,23 @@ async def on_voice_state_update(member, before, after):
 		return
 
 	for guildId in guildIds:
-		if moduleStates.isLoaded('autoGenChannel', str(guildId)):
+		if moduleStates.isLoaded('autoGenChannel', guildId):
 			category = functions.get_channel(guildId, configs.autoGenChannel[str(guildId)]["category"], bot)
 			doCheck = True if before.channel in category.voice_channels or after.channel in category.voice_channels else False
 
 		if action == 1:
-			if moduleStates.isLoaded('logJoinLeaveChannel', str(guildId)):
+			if moduleStates.isLoaded('logJoinLeaveChannel', guildId):
 				voiceChannelLogger[str(guildId)].logJoin(member.name, member.id, after.channel.name, after.channel.id)
 
-			if moduleStates.isLoaded('autoGenChannel', str(guildId)) and doCheck:
+			if moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
 				if functions.activeVoiceChannels(category.voice_channels) == len(category.voice_channels):
 					await category.create_voice_channel("Channel")
 
 		elif action == 2:
-			if moduleStates.isLoaded('logJoinLeaveChannel', str(guildId)):
+			if moduleStates.isLoaded('logJoinLeaveChannel', guildId):
 				voiceChannelLogger[str(guildId)].logMove(member.name, member.id, before.channel.name, before.channel.id, after.channel.name, after.channel.id)
 
-			if moduleStates.isLoaded('autoGenChannel', str(guildId)) and doCheck:
+			if moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
 				if functions.activeVoiceChannels(category.voice_channels) == len(category.voice_channels):
 					await category.create_voice_channel("Channel")
 
@@ -137,10 +137,10 @@ async def on_voice_state_update(member, before, after):
 						break
 
 		elif action == 3:
-			if moduleStates.isLoaded('logJoinLeaveChannel', str(guildId)):
+			if moduleStates.isLoaded('logJoinLeaveChannel', guildId):
 				voiceChannelLogger[str(guildId)].logLeave(member.name, member.id, before.channel.name, before.channel.id)
 
-			if moduleStates.isLoaded('autoGenChannel', str(guildId)) and doCheck:
+			if moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
 				for channel in category.voice_channels:
 					if functions.activeVoiceChannels(category.voice_channels) < len(category.voice_channels)-1:
 						if len(channel.members) == 0:

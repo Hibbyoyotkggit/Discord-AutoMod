@@ -1,8 +1,8 @@
 import re
 
 def get_channel(guildId, channelId, bot):
-    guild = bot.get_guild(guildId)
-    channel = guild.get_channel(channelId)
+    guild = bot.get_guild(int(guildId))
+    channel = guild.get_channel(int(channelId))
 
     return channel
 

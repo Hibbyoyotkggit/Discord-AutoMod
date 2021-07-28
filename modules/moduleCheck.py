@@ -38,16 +38,16 @@ class ModuleStates():
 
 
         groupConfig = self.readFile(groupFile)
-        if groupConfig.get(guildId) != None:
-            guild = groupConfig[guildId]
+        if groupConfig.get(str(guildId)) != None:
+            guild = groupConfig[str(guildId)]
 
             if guild.get("active_modules") != None:
                 for module in guild["active_modules"]:
-                    self.loadedGuilds[guildId]["active_modules"].append(module)
+                    self.loadedGuilds[str(guildId)]["active_modules"].append(module)
 
             if guild.get("active_groups") != None:
                 for group in guild["active_groups"]:
-                    self.readStatesOfGroup(group, guildId)
+                    self.readStatesOfGroup(group, str(guildId))
 
     def fileExists(self, filename):
         return os.path.exists(f"{self.directory}/{filename}")
