@@ -2,7 +2,9 @@
 This is a discord bot designed to do some moderation tasks.  
 This bot is written in [Python](https://www.python.org) and uses [discord.py](https://discordpy.readthedocs.io/en/latest/) ([on Github](https://github.com/Rapptz/discord.py)).
 
-An installation and configuration guide is available [here](https://einfachirgendwer0815.github.io/Discord-AutoMod/installation).
+## Installation and configuration
+- [Installation guide](https://einfachirgendwer0815.github.io/Discord-AutoMod/installation)
+- [Configuration guide](https://einfachirgendwer0815.github.io/Discord-AutoMod/configuration)
 
 ## Feature list
 
