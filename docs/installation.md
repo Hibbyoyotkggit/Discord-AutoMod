@@ -12,7 +12,7 @@ You can download Python at [python.org](https://www.python.org/downloads). Choos
 
 ### PIP
 
-PIP (__P__ackage __I__ndex for __P__ython) is used to install python packages. Pip is available via APT on ubuntu (and maybe on other distros too).
+PIP (**P**ackage **I**ndex for **P**ython) is used to install python packages. Pip is available via APT on ubuntu (and maybe on other distros too).
 
 To install it via APT
 
@@ -47,7 +47,7 @@ python3 -m pip --version # maybe you'll need to use 'python3.8' or 'python3.9' i
 
 Discord.py is the python library for communicating with [discord's](https://discord.com) API. It can be installed via PIP.
 
-Run (choose the same variant as [here](#PIP)):
+Run (choose the same variant as for the installation of pip):
 
 ```bash
 # one of the following should work
