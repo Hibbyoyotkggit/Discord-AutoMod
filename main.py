@@ -9,7 +9,7 @@ import sys, os
 import json
 
 # importing bot modules
-from modules import configLoader, moduleCheck, logger, functions
+from modules import configLoader, moduleCheck, logger, functions, cogs
 
 logging.basicConfig(level=logging.INFO,
 	stream=sys.stdout,
@@ -54,6 +54,11 @@ for guildId in moduleStates.loadedGuilds.keys():
 	if moduleStates.isLoaded('logJoinLeaveChannel', guildId):
 		voiceChannelLogger[guildId] = logger.VoiceChannelLogger(f"{configs.logger[guildId]['directory']}/{configs.logger[guildId]['voiceChannelLoggerBaseFilename']}")
 		voiceChannelLogger[guildId].initFile()
+
+# register cogs
+bot.add_cog(cogs.TextChannel(bot, configs, moduleStates, textChannelLogger))
+bot.add_cog(cogs.MessageLogger(bot, configs, messageLogger))
+bot.add_cog(cogs.VoiceChannel(bot, configs, moduleStates, voiceChannelLogger))
 
 @bot.event
 async def on_ready():
