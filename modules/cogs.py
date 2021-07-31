@@ -25,14 +25,20 @@ class TextChannel(commands.Cog):
             self.messageLogger[guildId].logMessage(message.author, message.author.id, message.content, message.id)
 
         if self.moduleStates.isLoaded('wordBlacklist', guildId):
-            if functions.onBlacklist(self.configs.blacklist[guildId]["blacklist"],message.content):
-                self.textChannelLogger[guildId].logMessageDeleteBlacklist(message.content, message.id, message.author.name, message.author.id)
-                await message.delete()
+            await self.execute_blacklist(message, guildId)
 
         if self.moduleStates.isLoaded('linkBlocker', guildId):
-            if functions.containsLink(message.content):
-                self.textChannelLogger[guildId].logMessageDeleteLink(message.content, message.id, message.author.name, message.author.id)
-                await message.delete()
+            await self.execute_linkBlocker(message, guildId)
+
+    async def execute_blacklist(self, message, guildId):
+        if functions.onBlacklist(self.configs.blacklist[guildId]["blacklist"],message.content):
+            self.textChannelLogger[guildId].logMessageDeleteBlacklist(message.content, message.id, message.author.name, message.author.id)
+            await message.delete()
+
+    async def execute_linkBlocker(self, message, guildId):
+        if functions.containsLink(message.content):
+            self.textChannelLogger[guildId].logMessageDeleteLink(message.content, message.id, message.author.name, message.author.id)
+            await message.delete()
 
     @commands.Cog.listener()
     async def on_message_delete(self,message):
@@ -72,54 +78,75 @@ class VoiceChannel(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-    	guildIds = []
-    	if before.channel != None: guildIds.append(before.channel.guild.id)
-    	if after.channel != None: guildIds.append(after.channel.guild.id)
+        guildIds = []
+        if before.channel != None: guildIds.append(before.channel.guild.id)
+        if after.channel != None: guildIds.append(after.channel.guild.id)
 
-    	action = 0 # 0 = default; 1 = join; 2 = move; 3 = leave
-    	if before.channel == None and after.channel != None: action = 1
-    	if before.channel != None and after.channel != None: action = 2
-    	if before.channel != None and after.channel == None: action = 3
+        action = await self.findAction(before, after)
 
-    	if action == 0:
-    		return
+        if action == 0:
+            return
 
-    	for guildId in guildIds:
-    		if self.moduleStates.isLoaded('autoGenChannel', guildId):
-    			category = functions.get_channel(guildId, self.configs.autoGenChannel[str(guildId)]["category"], self.bot)
-    			doCheck = True if before.channel in category.voice_channels or after.channel in category.voice_channels else False
+        for guildId in guildIds:
+            category, doCheck = await self.findAutoGenChannelInfos(guildId, before, after)
 
-    		if action == 1:
-    			if self.moduleStates.isLoaded('logJoinLeaveChannel', guildId):
-    				self.voiceChannelLogger[str(guildId)].logJoin(member.name, member.id, after.channel.name, after.channel.id)
+            if action == 1:
+                await self.on_join(guildId, member, after, category, doCheck)
 
-    			if self.moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
-    				if functions.activeVoiceChannels(category.voice_channels) == len(category.voice_channels):
-    					await category.create_voice_channel("Channel")
+            elif action == 2:
+                await self.on_move(guildId, member, before, after, category, doCheck)
 
-    		elif action == 2:
-    			if self.moduleStates.isLoaded('logJoinLeaveChannel', guildId):
-    				self.voiceChannelLogger[str(guildId)].logMove(member.name, member.id, before.channel.name, before.channel.id, after.channel.name, after.channel.id)
+            elif action == 3:
+                await self.on_leave(guildId, member, before, category, doCheck)
 
-    			if self.moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
-    				if functions.activeVoiceChannels(category.voice_channels) == len(category.voice_channels):
-    					await category.create_voice_channel("Channel")
+    async def findAction(self, before, after):
+        action = 0 # 0 = default; 1 = join; 2 = move; 3 = leave
+        if before.channel == None and after.channel != None: action = 1
+        if before.channel != None and after.channel != None: action = 2
+        if before.channel != None and after.channel == None: action = 3
 
-    				for channel in category.voice_channels:
-    					if functions.activeVoiceChannels(category.voice_channels) < len(category.voice_channels)-1:
-    						if len(channel.members) == 0:
-    							await channel.delete()
-    					else:
-    						break
+        return action
 
-    		elif action == 3:
-    			if self.moduleStates.isLoaded('logJoinLeaveChannel', guildId):
-    				self.voiceChannelLogger[str(guildId)].logLeave(member.name, member.id, before.channel.name, before.channel.id)
+    async def findAutoGenChannelInfos(self, guildId, before, after):
+        if self.moduleStates.isLoaded('autoGenChannel', guildId):
+            category = functions.get_channel(guildId, self.configs.autoGenChannel[str(guildId)]["category"], self.bot)
+            doCheck = True if before.channel in category.voice_channels or after.channel in category.voice_channels else False
+        else:
+            category = None
+            doCheck = None
 
-    			if self.moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
-    				for channel in category.voice_channels:
-    					if functions.activeVoiceChannels(category.voice_channels) < len(category.voice_channels)-1:
-    						if len(channel.members) == 0:
-    							await channel.delete()
-    					else:
-    						break
+        return (category, doCheck)
+
+    async def on_join(self, guildId, member, after, category, doCheck):
+        if self.moduleStates.isLoaded('logJoinLeaveChannel', guildId):
+            self.voiceChannelLogger[str(guildId)].logJoin(member.name, member.id, after.channel.name, after.channel.id)
+
+        await self.on_join_(guildId, category, doCheck)
+
+    async def on_join_(self, guildId, category, doCheck):
+        if self.moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
+            if functions.activeVoiceChannels(category.voice_channels) == len(category.voice_channels):
+                await category.create_voice_channel("Channel")
+
+    async def on_leave(self, guildId, member, before, category, doCheck):
+        if self.moduleStates.isLoaded('logJoinLeaveChannel', guildId):
+            self.voiceChannelLogger[str(guildId)].logLeave(member.name, member.id, before.channel.name, before.channel.id)
+
+        await self.on_leave_(guildId, category, doCheck)
+
+
+    async def on_leave_(self, guildId, category, doCheck):
+        if self.moduleStates.isLoaded('autoGenChannel', guildId) and doCheck:
+            for channel in category.voice_channels:
+                if functions.activeVoiceChannels(category.voice_channels) < len(category.voice_channels)-1:
+                    if len(channel.members) == 0:
+                        await channel.delete()
+                else:
+                    break
+
+    async def on_move(self, guildId, member, before, after, category, doCheck):
+        if self.moduleStates.isLoaded('logJoinLeaveChannel', guildId):
+            self.voiceChannelLogger[str(guildId)].logMove(member.name, member.id, before.channel.name, before.channel.id, after.channel.name, after.channel.id)
+
+        await self.on_join_(guildId, category, doCheck)
+        await self.on_leave_(guildId, category, doCheck)
