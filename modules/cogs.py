@@ -149,3 +149,19 @@ class VoiceChannel(commands.Cog):
 
         await self.on_join_(guildId, category, doCheck)
         await self.on_leave_(guildId, category, doCheck)
+
+class Greeting(commands.Cog):
+    def __init__(self, bot, configs, moduleStates, guildLogger):
+        self.bot = bot
+        self.configs = configs
+        self.moduleStates = moduleStates
+        self.guildLogger = guildLogger
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        logging.info(f"loaded cog '{self.__class__.__name__.lower()}'")
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        if self.moduleStates.isLoaded('logGuildJoinLeave', member.guild.id):
+            self.guildLogger[str(member.guild.id)].logGuildJoin(member.name, member.id)

@@ -3,6 +3,7 @@
     "directory": "./logs",
     "messageLoggerBaseFilename": "messages",
     "textChannelLoggerBaseFilename": "textchannel",
-    "voiceChannelLoggerBaseFilename": "voicechannel"
+    "voiceChannelLoggerBaseFilename": "voicechannel",
+    "guildLoggerBaseFilename": "greeting"
   }
 }

@@ -6,7 +6,8 @@
     "GUILDID": {
       "active_groups": [
         "textchannel",
-        "voicechannel"
+        "voicechannel",
+        "greeting"
       ]
     }
   }

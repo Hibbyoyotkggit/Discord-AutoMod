@@ -1,0 +1,9 @@
+{
+  "GUILDID": {
+    "active_modules": [
+      "welcome",
+      "disband",
+      "logGuildJoinLeave"
+    ]
+  }
+}
