@@ -78,26 +78,25 @@ class VoiceChannel(commands.Cog):
 
     @commands.Cog.listener()
     async def on_voice_state_update(self, member, before, after):
-        guildIds = []
-        if before.channel != None: guildIds.append(before.channel.guild.id)
-        if after.channel != None: guildIds.append(after.channel.guild.id)
+        guildId = before.channel.guild.id if before.channel != None else (after.channel.guild.id if after.channel != None else None)
+        if guildId == None:
+            return
 
         action = await self.findAction(before, after)
 
         if action == 0:
             return
 
-        for guildId in guildIds:
-            category, doCheck = await self.findAutoGenChannelInfos(guildId, before, after)
+        category, doCheck = await self.findAutoGenChannelInfos(guildId, before, after)
 
-            if action == 1:
-                await self.on_join(guildId, member, after, category, doCheck)
+        if action == 1:
+            await self.on_join(guildId, member, after, category, doCheck)
 
-            elif action == 2:
-                await self.on_move(guildId, member, before, after, category, doCheck)
+        elif action == 2:
+            await self.on_move(guildId, member, before, after, category, doCheck)
 
-            elif action == 3:
-                await self.on_leave(guildId, member, before, category, doCheck)
+        elif action == 3:
+            await self.on_leave(guildId, member, before, category, doCheck)
 
     async def findAction(self, before, after):
         action = 0 # 0 = default; 1 = join; 2 = move; 3 = leave
