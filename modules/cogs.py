@@ -164,4 +164,9 @@ class Greeting(commands.Cog):
     @commands.Cog.listener()
     async def on_member_join(self, member):
         if self.moduleStates.isLoaded('logGuildJoinLeave', member.guild.id):
-            self.guildLogger[str(member.guild.id)].logGuildJoin(member.name, member.id)
+            self.guildLogger[str(member.guild.id)].logGuildJoin(member.name, member.id, member.guild.name, member.guild.id)
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        if self.moduleStates.isLoaded('logGuildJoinLeave', member.guild.id):
+            self.guildLogger[str(member.guild.id)].logGuildLeave(member.name, member.id, member.guild.name, member.guild.id)

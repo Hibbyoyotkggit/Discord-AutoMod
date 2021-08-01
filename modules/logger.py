@@ -46,10 +46,10 @@ class VoiceChannelLogger(Logger):
             file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{member}' ({memberId}) moved from voice channel '{beforeChannel}' ({beforeChannelId}) to '{afterChannel}' ({afterChannelId})\n")
 
 class GuildJoinLeaveLogger(Logger):
-    def logGuildJoin(self, member, memberId):
+    def logGuildJoin(self, member, memberId, guild, guildId):
         with open(self.filename, "a") as file:
-            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{member}' ({memberId}) joind the guild\n")
+            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{member}' ({memberId}) joind the guild '{guild}' ({guildId})\n")
 
-    def logGuildLeave(self, member, memberId):
+    def logGuildLeave(self, member, memberId, guild, guildId):
         with open(self.filename, "a") as file:
-            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{member}' ({memberId}) left the guild\n")
+            file.write(f"{datetime.datetime.now().strftime('%d %b %H:%M:%S')} '{member}' ({memberId}) left the guild '{guild}' ({guildId})\n")
