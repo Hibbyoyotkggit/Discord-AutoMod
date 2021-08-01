@@ -1,9 +1,3 @@
-autoGenChannel.json
-group_textchannel.json
-group_voicechannel.json
-group_greeting.json
-logger.json
-mainConfig.json
-blacklist.json
+*.json
 
 !defaults/*
