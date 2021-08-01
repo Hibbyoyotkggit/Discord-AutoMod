@@ -17,5 +17,6 @@ This bot is written in [Python](https://www.python.org) and uses [discord.py](ht
   * word blacklist
   * link blocker
   * multi server
+  * welcoming new server members
 
 A list of features that will be added in the future can be found [here](https://einfachirgendwer0815.github.io/Discord-AutoMod/PlannedFeatures).
