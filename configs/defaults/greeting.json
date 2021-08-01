@@ -1,0 +1,54 @@
+{
+  "GUILDID": {
+    "embed": {
+      "use": true,
+      "join": {
+        "chooseRandomTitle": true,
+        "titles": [
+          "Welcome, {memberName}!",
+          "Hey, {memberName}!",
+          "A wild {memberName} was seen on this server!"
+        ],
+        "chooseRandomDescription": false,
+        "descriptions": [
+          "Welcome on the server, <@{memberId}>!"
+        ],
+        "color": 65280,
+        "useAvatar": true,
+        "channel": "CHANNELID"
+      },
+      "leave": {
+        "chooseRandomTitle": true,
+        "titles": [
+          "Bye, {memberName}!",
+          "See you later, {memberName}!",
+          "{memberName} left!"
+        ],
+        "chooseRandomDescription": false,
+        "descriptions": [
+          "<@{memberId}> left the server!"
+        ],
+        "color": 16711680,
+        "useAvatar": true,
+        "channel": "CHANNELID"
+      }
+    },
+    "message": {
+      "use": true,
+      "join": {
+        "randomText": false,
+        "texts": [
+          "<@{memberId}> joined the server!"
+        ],
+        "channel": "CHANNELID"
+      },
+      "leave": {
+        "randomText": false,
+        "texts": [
+          "<@{memberId}> left the server!"
+        ],
+        "channel": "CHANNELID"
+      }
+    }
+  }
+}
