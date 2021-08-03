@@ -24,7 +24,7 @@ def onBlacklist(blacklist, message):
     return False
 
 def containsLink(message):
-    reString = r".*(http|https)://.*\.[a-zA-Z]{2,3}(/[\d\w]*)*(\s*.*)?"
+    reString = r".*https?:.*\.[a-zA-Z]{2,3}.*"
 
     if re.fullmatch(reString, message, re.I):
         return True
