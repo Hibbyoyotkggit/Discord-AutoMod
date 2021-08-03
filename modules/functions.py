@@ -15,7 +15,7 @@ def activeVoiceChannels(channels):
     return count
 
 def onBlacklist(blacklist, message):
-    messageLower = message.lower().replace(' ','')
+    messageLower = re.sub('[\w]*', '', message).lower() # replace whitespace and lower text
 
     for word in blacklist:
         if word in messageLower:
