@@ -14,19 +14,26 @@ def activeVoiceChannels(channels):
 
     return count
 
+def replaceWhitespace(text):
+    if type(text) != str:
+        return ''
+
+    return re.sub(' *', '', text)
+
 def onBlacklist(blacklist, message):
-    messageLower = re.sub('[\w]*', '', message).lower() # replace whitespace and lower text
+    messageLower = replaceWhitespace(message) # replace whitespace
 
     for word in blacklist:
-        if word in messageLower:
+        if re.match(f'.*{word}.*', messageLower, re.I):
             return True
 
     return False
 
 def containsLink(message):
+    messageLower = replaceWhitespace(message)
     reString = r".*https?:.*\.[a-zA-Z]{2,3}.*"
 
-    if re.fullmatch(reString, message, re.I):
+    if re.fullmatch(reString, messageLower, re.I):
         return True
 
     return False
