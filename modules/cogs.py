@@ -198,7 +198,7 @@ class Greeting(commands.Cog):
                 embed.color = embedConf["join"]["color"]
 
                 if embedConf["join"]["useAvatar"]:
-                    embed.set_image(url=member.avatar_url)
+                    embed.set_thumbnail(url=member.avatar_url)
 
                 channel = member.guild.get_channel(int(embedConf["join"]["channel"]))
                 await channel.send(embed=embed)
@@ -239,7 +239,7 @@ class Greeting(commands.Cog):
                 embed.color = embedConf["leave"]["color"]
 
                 if embedConf["leave"]["useAvatar"]:
-                    embed.set_image(url=member.avatar_url)
+                    embed.set_thumbnail(url=member.avatar_url)
 
                 channel = member.guild.get_channel(int(embedConf["leave"]["channel"]))
                 await channel.send(embed=embed)
