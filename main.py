@@ -17,7 +17,16 @@ logging.basicConfig(level=logging.INFO,
 	format="{asctime} ({module} : {funcName} : {lineno}) [{levelname:8}] {message}",
 	datefmt="%d.%m.%Y %H:%M:%S")
 
-configFiles = ["mainConfig.json","token.json","logger.json","group_textchannel.json","autoGenChannel.json","blacklist.json","group_greeting.json","greeting.json"]
+configFiles = [
+	("mainConfig.json", "mainConfig"),
+	("token.json", "token"),
+	("logger.json", "logger"),
+	("group_textchannel.json", "group_textchannel"),
+	("autoGenChannel.json", "autoGenChannel"),
+	("blacklist.json", "blacklist"),
+	("group_greeting.json", "group_greeting"),
+	("greeting.json", "greeting")
+]
 configs = configLoader.Configs("configs",configFiles)
 
 intents = discord.Intents.default()
