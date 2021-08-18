@@ -1,5 +1,9 @@
 {
   "GUILDID": {
-    "category": "CATEGORYID"
+    "categories": [
+      "CATEGORYID",
+      "CATEGORYID",
+      ...
+    ]
   }
 }
