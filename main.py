@@ -9,7 +9,8 @@ import sys, os
 import json
 
 # importing bot modules
-from modules import configLoader, moduleCheck, logger, functions, cogs
+from modules import configLoader, moduleCheck, logger, functions
+from modules.cogs import textChannel, voiceChannel, greeting
 
 logging.basicConfig(level=logging.INFO,
 	stream=sys.stdout,
@@ -71,9 +72,9 @@ for guildId in moduleStates.loadedGuilds.keys():
 		guildLogger[guildId].initFile()
 
 # register cogs
-bot.add_cog(cogs.Greeting(bot, configs, moduleStates, guildLogger))
-bot.add_cog(cogs.TextChannel(bot, configs, moduleStates, messageLogger, textChannelLogger))
-bot.add_cog(cogs.VoiceChannel(bot, configs, moduleStates, voiceChannelLogger))
+bot.add_cog(greeting.Greeting(bot, configs, moduleStates, guildLogger))
+bot.add_cog(textChannel.TextChannel(bot, configs, moduleStates, messageLogger, textChannelLogger))
+bot.add_cog(voiceChannel.VoiceChannel(bot, configs, moduleStates, voiceChannelLogger))
 
 @bot.event
 async def on_ready():
